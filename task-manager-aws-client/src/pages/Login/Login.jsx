@@ -39,7 +39,7 @@ const Login = () => {
   return (
     <div className="bg-[#FEFCFB]">
       <Helmet>
-        <title>Destinize | Login</title>
+        <title>Tasky | Login</title>
       </Helmet>
       <div className="max-w-[1400px] px-2 mx-auto mb-[40px] mt-[40px]">
         <div className="hero">
