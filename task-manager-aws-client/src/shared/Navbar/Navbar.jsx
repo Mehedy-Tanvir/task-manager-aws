@@ -1,17 +1,33 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AiOutlineMenu } from "react-icons/ai";
+import toast from "react-hot-toast";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const Navbar = () => {
-  const handleLogout = () => {
-    console.log("logout");
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
+  const logout = async () => {
+    try {
+      //   const token = localStorage.getItem("token");
+
+      axiosSecure
+        .post("/logout")
+        .then((res) => {
+          localStorage.removeItem("token"); // Remove token from localStorage
+          console.log(res.data);
+          toast.success("User logged out");
+          navigate("/");
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Unable to log out");
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
   const links = (
     <>
-      <li className="md:ml-0 text-[var(--body_color)] text-[16px]">
-        <div className="flex flex-col items-start justify-center gap-2 lg:items-center lg:flex-row">
-          <p className="font-medium normal-case">Mehedy Tanvir</p>
-        </div>
-      </li>
       <li>
         <NavLink
           className={({ isActive, isPending }) =>
@@ -58,7 +74,7 @@ const Navbar = () => {
 
       <li>
         <NavLink
-          onClick={handleLogout}
+          onClick={logout}
           className={({ isActive, isPending }) =>
             isPending
               ? "pending"

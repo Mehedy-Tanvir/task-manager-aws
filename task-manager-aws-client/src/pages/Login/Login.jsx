@@ -1,46 +1,42 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import {
-  loadCaptchaEnginge,
-  LoadCanvasTemplate,
-  validateCaptcha,
-} from "react-simple-captcha";
-import { Helmet } from "react-helmet-async";
+import toast from "react-hot-toast";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [disabled, setDisabled] = useState(true);
 
-  useEffect(() => {
-    loadCaptchaEnginge(6);
-  }, []);
-
-  const handleSubmit = (e) => {
-    const toastId = toast.loading("Logging in...");
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const email = form.email.value;
+    const password = form.password.value;
     console.log(email, password);
-  };
 
-  const handleValidateCaptcha = (e) => {
-    const user_captcha_value = e.target.value;
-    if (validateCaptcha(user_captcha_value)) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-    }
+    const userInfo = {
+      password,
+      email,
+    };
+    axiosPublic
+      .post("/jwt", userInfo)
+      .then((res) => {
+        localStorage.setItem("token", res.data.token);
+
+        toast.success("User logged in successfully");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("User was not logged in");
+      });
   };
 
   return (
     <div className="bg-[#FEFCFB]">
-      <Helmet>
-        <title>Tasky | Login</title>
-      </Helmet>
       <div className="max-w-[1400px] px-2 mx-auto mb-[40px] mt-[40px]">
         <div className="hero">
           <div className="flex-col md:flex-row-reverse hero-content">
@@ -84,27 +80,8 @@ const Login = () => {
                     )}
                   </div>
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <LoadCanvasTemplate />
-                  </label>
-                  <input
-                    onBlur={handleValidateCaptcha}
-                    type="text"
-                    name="captcha"
-                    placeholder="Type The Captcha"
-                    className="input input-bordered"
-                  />
-                </div>
                 <div className="mt-6 form-control">
-                  <button
-                    disabled={disabled}
-                    className={
-                      disabled
-                        ? "btn text-3xl h-[60px] px-[20px] rounded-lg"
-                        : "bg-yellow-500 hover:opacity-90 text-white text-3xl h-[60px] px-[20px] rounded-lg"
-                    }
-                  >
+                  <button className="bg-yellow-500 hover:opacity-90 text-white text-3xl h-[60px] px-[20px] rounded-lg">
                     Login
                   </button>
                   <p className="mt-4 font-medium text-center text-gray-600">

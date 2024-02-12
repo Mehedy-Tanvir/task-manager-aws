@@ -1,36 +1,44 @@
-import toast from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Helmet } from "react-helmet-async";
+
+import toast from "react-hot-toast";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
-  const location = useLocation();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const name = e.target.name.value;
-    const image = e.target.image.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    if (password.length < 6) {
-      return toast.error("Password should be greater than 6 characters");
-    } else if (!/[A-Z]/.test(password)) {
-      return toast.error("Password should contain at least one capital letter");
-    } else if (!/[\W_]/.test(password)) {
-      return toast.error(
-        "Password should contain at least one special character"
-      );
-    }
-    const toastId = toast.loading("Registering...");
-    console.log(name, image, email);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    console.log(name, email, password);
+
+    const userInfo = {
+      name,
+      password,
+      email,
+    };
+    axiosPublic
+      .post("/users", userInfo)
+      .then((res) => {
+        console.log(res.data);
+
+        toast.success("User registered successfully");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("User was not registered");
+      });
   };
+
   return (
     <div className="bg-[#FEFCFB]">
-      <Helmet>
-        <title>Tasky | Register</title>
-      </Helmet>
       <div className="max-w-[1400px] px-2 mx-auto mt-[40px] mb-[40px]">
         <div className="hero">
           <div className="flex-col md:flex-row-reverse hero-content">
@@ -39,15 +47,6 @@ const Register = () => {
             </div>
             <div className="border-2 shadow-xl max-w-[280px] md:max-w-[400px] shrink border-yellow-500 card">
               <form onSubmit={handleSubmit} className="card-body">
-                <div className="form-control">
-                  <input
-                    name="image"
-                    type="text"
-                    placeholder="Your Image URL"
-                    className="input input-bordered"
-                    required
-                  />
-                </div>
                 <div className="form-control">
                   <input
                     name="name"
