@@ -2,13 +2,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AiOutlineMenu } from "react-icons/ai";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../../Provider/AuthProvider";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
-  const { user, loading, setUser, setLoading } = useContext(AuthContext);
+  const { user, loading, setUser } = useContext(AuthContext);
   const logout = async () => {
     try {
       //   const token = localStorage.getItem("token");
@@ -46,20 +46,22 @@ const Navbar = () => {
           Home
         </NavLink>
       </li>
-      <li>
-        <NavLink
-          className={({ isActive, isPending }) =>
-            isPending
-              ? "pending"
-              : isActive
-              ? "lg:text-yellow-500] drop-shadow-lg normal-case font-poppins font-normal text-[16px]"
-              : "text-[#222] drop-shadow-lg normal-case font-normal text-[16px]"
-          }
-          to="/dashboard/tasksList"
-        >
-          Create Task
-        </NavLink>
-      </li>
+      {user && !loading && (
+        <li>
+          <NavLink
+            className={({ isActive, isPending }) =>
+              isPending
+                ? "pending"
+                : isActive
+                ? "lg:text-yellow-500] drop-shadow-lg normal-case font-poppins font-normal text-[16px]"
+                : "text-[#222] drop-shadow-lg normal-case font-normal text-[16px]"
+            }
+            to="addTask"
+          >
+            Create Task
+          </NavLink>
+        </li>
+      )}
 
       {!user && !loading && (
         <li>

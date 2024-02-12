@@ -9,6 +9,7 @@ import Login from "./pages/Login/Login";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./Provider/AuthProvider";
+import AddTask from "./pages/AddTask/AddTask";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login></Login>,
+      },
+      {
+        path: "addTask",
+        element: <AddTask></AddTask>,
       },
     ],
   },
