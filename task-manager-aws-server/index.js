@@ -22,7 +22,7 @@ app.use(cookieParser());
 // Authentication Middleware
 const verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const token = req?.headers?.authorization?.split(" ")[1];
     if (!token) {
       return res
         .status(401)
@@ -58,7 +58,7 @@ app.post("/jwt", async (req, res) => {
         expiresIn: "10h",
       }
     );
-    res.json({ success: true, token });
+    res.json({ success: true, token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -75,10 +75,19 @@ app.post("/logout", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/verifyAuth", verifyToken, async (req, res) => {
+app.get("/verifyAuth", verifyToken, async (req, res) => {
   try {
     // If the request reaches here, it means the token is valid
-    res.json({ success: true });
+    const userEmail = req.user.email;
+    const query = { email: userEmail };
+    const existingUser = await User.findOne(query);
+
+    if (existingUser) {
+      return res.json({
+        email: existingUser.email,
+        name: existingUser.name,
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });

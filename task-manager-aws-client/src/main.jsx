@@ -8,11 +8,16 @@ import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "react-hot-toast";
+import AuthProvider from "./Provider/AuthProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout></MainLayout>,
+    element: (
+      <AuthProvider>
+        <MainLayout></MainLayout>
+      </AuthProvider>
+    ),
     children: [
       {
         index: true,
@@ -33,7 +38,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HelmetProvider>
-      <Toaster />
+      <Toaster></Toaster>
       <RouterProvider router={router} />
     </HelmetProvider>
   </React.StrictMode>

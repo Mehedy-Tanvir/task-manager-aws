@@ -2,10 +2,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AiOutlineMenu } from "react-icons/ai";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
+  const { user, loading, setUser, setLoading } = useContext(AuthContext);
   const logout = async () => {
     try {
       //   const token = localStorage.getItem("token");
@@ -15,12 +18,13 @@ const Navbar = () => {
         .then((res) => {
           localStorage.removeItem("token"); // Remove token from localStorage
           console.log(res.data);
+          setUser(null);
           toast.success("User logged out");
           navigate("/");
         })
         .catch((error) => {
           console.log(error);
-          toast.error("Unable to log out");
+          setUser(null);
         });
     } catch (error) {
       console.error("Error:", error);
@@ -53,39 +57,43 @@ const Navbar = () => {
           }
           to="/dashboard/tasksList"
         >
-          Dashboard
+          Create Task
         </NavLink>
       </li>
 
-      <li>
-        <NavLink
-          className={({ isActive, isPending }) =>
-            isPending
-              ? "pending"
-              : isActive
-              ? " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
-              : " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
-          }
-          to="/login"
-        >
-          Login
-        </NavLink>
-      </li>
+      {!user && !loading && (
+        <li>
+          <NavLink
+            className={({ isActive, isPending }) =>
+              isPending
+                ? "pending"
+                : isActive
+                ? " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
+                : " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
+            }
+            to="/login"
+          >
+            Login
+          </NavLink>
+        </li>
+      )}
 
-      <li>
-        <NavLink
-          onClick={logout}
-          className={({ isActive, isPending }) =>
-            isPending
-              ? "pending"
-              : isActive
-              ? " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
-              : " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
-          }
-        >
-          Logout
-        </NavLink>
-      </li>
+      {user && !loading && (
+        <li>
+          <NavLink
+            onClick={logout}
+            className={({ isActive, isPending }) =>
+              isPending
+                ? "pending"
+                : isActive
+                ? " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
+                : " lg:bg-yellow-500 duration-1000 ease-in-out drop-shadow-lg hover:bg-opacity-80 lg:text-white lg:py-1 lg:px-4 rounded-md  normal-case font-normal text-[16px]"
+            }
+          >
+            Logout
+          </NavLink>
+        </li>
+      )}
     </>
   );
   return (
